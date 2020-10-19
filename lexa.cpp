@@ -13,3 +13,4 @@ int main()
 	cout <<"KAK DELA LEXA?" << endl;
 	return 0;
 }
+	
