@@ -1,6 +1,15 @@
 #include <iostream>
 
+using namespace std;
+
+void jopa(string gavno)
+{
+	cout << gavno << endl;
+}
+
 int main()
 {
-	std::cout <<"KAK DELA LEXA?" << endl;
+	jopa("idi nahuy");
+	cout <<"KAK DELA LEXA?" << endl;
+	return 0;
 }
