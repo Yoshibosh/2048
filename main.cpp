@@ -1,7 +1,10 @@
 #include <iostream>
+#include <stdio.h>
 #include <string>
 
 using namespace std;
+
+bool GAMEOVER = false;
 
 string operator * (string s,int d){
     string result;
@@ -23,12 +26,15 @@ private:
     string soloxa;
 public:
 
+cell(int value,int x,int y);
+~cell();
+
 cell *operator+(cell *second)
     {
         this->Ivan = this->Ivan + second->Ivan;
 
         delete second;
-        return;
+        return second;
     }
 
 
@@ -60,9 +66,6 @@ cell *operator+(cell *second)
     }
 
 
-
-    cell(int value,int x,int y);
-    ~cell();
 };
 
 cell::cell(int value,int x,int y)
@@ -100,21 +103,18 @@ int okno(size_t width, size_t hieght){
 //     }
 
 
-int main(){
+
+
+int main()
+{
+
+    while (!GAMEOVER){
+        break;
+    }   
+
+    
 
     okno(25,25);
-
-    cell *c1 = new cell (2,1,1);
-    cell *c2 = new cell (8,1,2);
-    cell *c3 = new cell (16,1,3);
-
-    // cell c1(2,1,1),c2(8,1,2),c3(16,1,3); 
-
-    c1 + c2;
-
-    c3->out();
-    c1->out();
-    c2->out();
 
     cout << "Anal"; 
 
