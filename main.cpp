@@ -6,7 +6,9 @@ using namespace std;
 
 bool GAMEOVER = false;
 
-string operator * (string s,int d){
+
+//Умножает строку на целое число #пример - "+" * 5 = "+++++";
+string operator * (string s,size_t d){
     string result;
 
     while (d >= 0){
@@ -18,68 +20,9 @@ string operator * (string s,int d){
 
 }
 
-class cell
-{
-private:
-    int x,y;
-    int Ivan;
-    string soloxa;
-public:
-
-cell(int value,int x,int y);
-~cell();
-
-cell *operator+(cell *second)
-    {
-        this->Ivan = this->Ivan + second->Ivan;
-
-        delete second;
-        return second;
-    }
 
 
-    void out(){
-        cout << "value = " << this->getIvan() << endl;
-    }
 
-
-    int getX()
-    {
-        return x;
-    }
-    int getY()
-    {
-        return y;
-    }
-    int getIvan()
-    {
-        return Ivan;
-    }
-    string getSoloxa()
-    {
-        return soloxa;
-    }
-
-    void setIvan(int Ivan)
-    {
-        this->Ivan = Ivan;
-    }
-
-
-};
-
-cell::cell(int value,int x,int y)
-{
-    Ivan = value;
-    this->soloxa = soloxa;
-    this->x = x;
-    this->y = y;
-}
-
-cell::~cell()
-{
-    
-}
 
 int okno(size_t width, size_t hieght){
 
@@ -96,27 +39,15 @@ int okno(size_t width, size_t hieght){
     return 0;
 }
 
-// cell* operator+(cell &first,cell *second)
-//     {
-//         first.setIvan(first.getIvan() + second->getIvan());
-//         delete second;
-//     }
-
-
-
 
 int main()
 {
 
-    while (!GAMEOVER){
-        break;
-    }   
+     
 
-    
+    string soloxa = "=||=";
 
-    okno(25,25);
-
-    cout << "Anal"; 
+    cout <<  soloxa * 10;
 
     return 0;
 }
