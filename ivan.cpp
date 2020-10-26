@@ -5,6 +5,8 @@
 
 using namespace std;
 
+int Choices();
+
 bool exitCreateCell = false;
 
 enum clickBtn {
@@ -32,28 +34,12 @@ void CreateCell(vector<vector<cell>>& vct)
 		
 		for (int j = 0; j < 4; j++)
 		{
-			if (exitCreateCell == false)
+			if (vct[3][j].value == 0)
 			{
-				if (vct[3][j].y == 3)
-				{
-					cout << " == 3" << endl;
-
-					if (vct[3][j].value == 0)
-					{
-						cout << "createCELL = true" << endl;
-						exitCreateCell = true;
-						std::vector<int> choices = { 4, 2 };
-						std::random_device rd;
-						std::mt19937 e{ rd() };
-						std::uniform_int_distribution<std::size_t> dist{ 0, choices.size() - 1 };
-						std::size_t i = dist(e);
-						vct[3][j].value = choices[i];
-					}
-				}
-			}
+				vct[3][j].value = Choices();
+				break;
+			}else{}
 		}
-		
-		exitCreateCell = false;
 	
 		break;
 	
@@ -61,87 +47,53 @@ void CreateCell(vector<vector<cell>>& vct)
 
 		for (int j = 0; j < 4; j++)
 		{
-			if (exitCreateCell == false)
+			if (vct[0][j].value == 0)
 			{
-				if (vct[0][j].y == 0)
-				{
-					cout << " == 3" << endl;
-
-					if (vct[0][j].value == 0)
-					{
-						cout << "createCELL = true" << endl;
-						exitCreateCell = true;
-						std::vector<int> choices = { 4, 2 };
-						std::random_device rd;
-						std::mt19937 e{ rd() };
-						std::uniform_int_distribution<std::size_t> dist{ 0, choices.size() - 1 };
-						std::size_t i = dist(e);
-						vct[0][j].value = choices[i];
-					}
-				}
-			}
+				vct[0][j].value = Choices();
+				break;
+			}else{}
 		}
 
-		exitCreateCell = false;
 		break;
 	case LEFT:
 
 		for (int j = 0; j < 4; j++)
 		{
-			if (exitCreateCell == false)
+			if (vct[j][3].value == 0)
 			{
-				if (vct[j][3].x == 3)
-				{
-					cout << " == 3" << endl;
-
-					if (vct[j][3].value == 0)
-					{
-						cout << "createCELL = true" << endl;
-						exitCreateCell = true;
-						std::vector<int> choices = { 4, 2 };
-						std::random_device rd;
-						std::mt19937 e{ rd() };
-						std::uniform_int_distribution<std::size_t> dist{ 0, choices.size() - 1 };
-						std::size_t i = dist(e);
-						vct[j][3].value = choices[i];
-					}
-				}
-			}
+				vct[j][3].value = Choices();
+				break;
+			}else{}
 		}
-		exitCreateCell = false;
 		break;
 
 	case RIGHT:
 		
 		for (int j = 0; j < 4; j++)
 		{
-			if (exitCreateCell == false)
+			if (vct[j][0].value == 0)
 			{
-				if (vct[j][0].x == 0)
-				{
-					cout << " == 3" << endl;
-
-					if (vct[j][0].value == 0)
-					{
-						cout << "createCELL = true" << endl;
-						exitCreateCell = true;
-						std::vector<int> choices = { 4, 2 };
-						std::random_device rd;
-						std::mt19937 e{ rd() };
-						std::uniform_int_distribution<std::size_t> dist{ 0, choices.size() - 1 };
-						std::size_t i = dist(e);
-						vct[j][0].value = choices[i];
-					}
-				}
-			}
+				vct[j][0].value = Choices();
+			}else{}
 		}
-		exitCreateCell = false;
+
 		break;
 
 	case CLEAR:
+	//LEXA LOX))
 		break;
 	}
-	
+}
+
+int Choices()
+{
+	exitCreateCell = true;
+	std::vector<int> choices = { 4, 2 };
+	std::random_device rd;
+	std::mt19937 e{ rd() };
+	std::uniform_int_distribution<std::size_t> dist{ 0, choices.size() - 1 };
+	std::size_t i = dist(e);
+	return choices[i];
 }
 
 void sort(vector<vector<cell>>& vct)
@@ -199,69 +151,25 @@ int main()
 			vct[i][j].y = i;
 		}
 	}
+
+	
+
 	btn = UP;
 	CreateCell(vct);
-	btn = DOWN;
-	CreateCell(vct);
-	btn = LEFT;
-	CreateCell(vct);
-	btn = RIGHT;
-	CreateCell(vct);
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			cout << vct[i][j].value << " ";
-		}
-		cout << endl;
-	}
-	cout << "------------------------------------------------------------------" << endl;
-	vector<vector<cell>> vct_2(4, vector<cell>(4));
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			vct[i][j].value = 0;
-			vct[i][j].x = j;
-			vct[i][j].y = i;
-		}
-	}
-	btn = UP;
-	CreateCell(vct);
-	btn = DOWN;
-	CreateCell(vct);
-	btn = LEFT;
-	CreateCell(vct);
-	btn = RIGHT;
-	CreateCell(vct);
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			cout << vct[i][j].value << " ";
-		}
-		cout << endl;
-	}
-	cout << endl << endl;
-	cell aga = vct[0][0];
-	vct[0][0] = vct[3][3];
-	vct[3][3] = aga;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			cout << vct[i][j].value << " ";
+	for (auto x : vct){
+		for (auto c : x){
+			cout << c.value << "\t";
 		}
 		cout << endl;
 	}
 
-	sort(vct);
 	cout << endl << endl;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			cout << vct[i][j].value << " ";
+
+	btn = LEFT;
+	CreateCell(vct);
+	for (auto x : vct){
+		for (auto c : x){
+			cout << c.value << "\t";
 		}
 		cout << endl;
 	}
