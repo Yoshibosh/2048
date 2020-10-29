@@ -2,9 +2,11 @@
 #include <vector>
 #include <cmath>
 #include <string>
+#include "main.chh"
 #include <ctime>
 
 using namespace std;
+
 
 string spaces(int);
 
@@ -14,20 +16,7 @@ void reverse(string &s)
     for (int i = s.length() - 1;i >= 0;i--){
         newStr += s[i];
     }
-
     s = newStr;
-}
-
-string operator* (string s,int d){
-    string result;
-
-    while (d >= 0){
-        result += s;
-        d--; 
-    }
-    
-    return result;
-
 }
 
 struct cell
@@ -38,21 +27,13 @@ struct cell
     cell();
 };
 
-cell::cell(){
-    this->value = 0;
-    this->x = 0;
-    this->y = (int)(10 * rand()/RAND_MAX);
-}
-
-
-void print(vector<vector<cell>> vct)
+void print(vector<vector<cell>>& vct,int fieldSize = 5,int cellSide = 5)
 {
     string gorizontal = "_";
     string vertical = "|" ;
     string space = " " ;
 
-    int fieldSize = 5;
-    int cellSide = 15;
+    
     for (int i = 0;i < fieldSize * cellSide + 1;i++){ 
 
 
@@ -60,7 +41,7 @@ void print(vector<vector<cell>> vct)
             for (int j = 0;j < fieldSize;j++){
                 cout << vertical + gorizontal * (cellSide*2);
             }
-        }else if(i == cellSide/2){
+        }else if(i == cellSide/2 +1){
             for (int j = 0;j < fieldSize;j++){
                 cout << vertical + space * (cellSide - 5 - 1 ) + spaces(vct[i][j].value) + (space * (cellSide - 1));
             }
@@ -115,7 +96,12 @@ int main()
 		}
 	}
 
-    print(vct);
+    int fieldSize;
+    int CellSize;
+
+    cin >> fieldSize >> CellSize;
+
+    print(vct,fieldSize,CellSize);
 
     
 
