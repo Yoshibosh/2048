@@ -7,6 +7,7 @@
 #include <string>
 #include <ctime>
 #include <random>
+#include <thread>
 
  
 using namespace std;
@@ -17,6 +18,7 @@ struct cell
 	short int x;
 	short int y;
 	short int value;
+	bool isAdd;
 };
 
 
@@ -151,54 +153,45 @@ void CreateCell(vector<vector<cell>> &vct,clickBtn btn)
 
 int Choices()
 {
-	std::vector<int> choices = { 4, 2 };
-	std::random_device rd;
-	std::mt19937 e{ rd() };
-	std::uniform_int_distribution<std::size_t> dist{ 0, choices.size() - 1 };
-	std::size_t i = dist(e);
-	return choices[i];
+	std::vector<int> choices;
+	if (rand() % 9 > 7)
+	{
+		return 4;
+	}else{ return 2;}
 }
 
-void sort(vector<vector<cell>>& vct)
+void sort(vector<vector<cell>>& vec)
 {
+	bool check = true;
 	cell temp;
-	cell tmp;
-	for (int m = 0; m < 4; m++)
-	{
-		for (int n = 0; n < 4; n++)
+	while(check){
+		
+		check = false;
+
+		for (int i = 0; i < vec.size(); i++)
 		{
-			for (int i = 0; i < 4; i++)
+			for (int j = 0; j < vec.size(); j++)
 			{
-				for (int j = 0; j < 4; j++)
-				{
-					if (vct[m][n].y < vct[i][j].y)
-					{
-						tmp = vct[m][n];
-						vct[m][n] = vct[i][j];
-						vct[i][j] = tmp;
+				// cout << "\nreal = " << j << "  X=" << vec[i][j].x << "\treal = " << i << "  Y=" << vec[i][j].y << endl;
+				if (vec[i][j].y != i | vec[i][j].x != j){
+					check = true;
+
+					// cout << "\nAAAUEY ====== " << vec[2][2].value << endl; 
+					// cout << "\nreal = " << j << "  X=" << vec[i][j].x << "\treal = " << i << "  Y=" << vec[i][j].y << endl;
+					
+					temp = vec[vec[i][j].y][vec[i][j].x]; 
+					vec[vec[i][j].y][vec[i][j].x] = vec[i][j];
+
+					if (temp.value == 0){
+						temp.y = i;
+						temp.x = j;
 					}
+					vec[i][j] = temp;
 				}
+
 			}
 		}
 	}
-
-
-	for (int m = 0; m < 4; m++)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < (4 - 1); j++)
-			{
-				if (vct[m][j].x > vct[m][j + 1].x)
-				{
-					temp = vct[m][j];
-					vct[m][j] = vct[m][j + 1];
-					vct[m][j + 1] = temp;
-				}
-			}
-		}
-	}
-	
 }
 
 
@@ -213,31 +206,84 @@ void reverse(string &s)
     s = newStr;
 }
 
-void print(vector<vector<cell>>& vct,int fieldSize = 5,int cellSide = 5)
+
+string backColor(int val)
+{
+	if (val == 2){
+		return "253";
+	}else if(val == 4){
+		return "229";
+	}else if(val == 8){
+		return "222";
+	}else if(val == 16){
+		return "215";
+	}else if(val == 32){
+		return "202";
+	}else if(val == 64){
+		return "52";
+	}else if(val > 64 && val < 4096){
+		return "226";
+	}else if(val > 4096){
+		return "28";
+	}
+	return "8";
+}
+
+void print(vector<vector<cell>>& vec,int fieldSize = 5,int cellSize = 5)
 {
     string gorizontal = "_";
     string vertical = "|" ;
     string space = " " ;
+	string slash = "/";
+	string beginE1 = "\x1b[48;5;";
+	string beginE2 = "m";
+	string endE = "\x1b[0m";
 
-    
-    for (int i = 0;i < fieldSize * cellSide + 1;i++){ 
+    for (int i = 0;i < vec.size();i++)
+	{ 
 
-
-        if(i % cellSide == 0){
-            for (int j = 0;j < fieldSize;j++){
-                cout << vertical + gorizontal * (cellSide*2);
-            }
-        }else if(i % cellSide/2 == 0){
-            for (int j = 0;j < fieldSize;j++){
-                cout << vertical + space * (cellSide - 5 - 1 ) + spaces(vct[i/cellSide][j].value) + (space * (cellSide - 1));
-            }
-        }else{
-            for (int j = 0;j < fieldSize;j++){
-                cout << vertical + space * (cellSide*2);
-            }
+		for (int j = 0;j < fieldSize;j++){
+        	cout << beginE1 + "8" + beginE2 + space * (cellSize * 2 + 1) + endE;
         }
+		cout << endl;
 
-        cout << vertical << endl;
+		for (int k = 0;k < cellSize + 1;k++)
+		{
+
+			for (int j = 0;j < vec.size();j++)
+			{
+
+
+				if (vec[i][j].value == 0)
+				{
+					cout << beginE1 + "8" + beginE2 + space + endE << beginE1 + backColor(vec[i][j].value) + beginE2 + space * (cellSize*2) + endE;
+				}
+				else if(vec[i][j].value != 0)
+				{
+					if (vec[i][j].isAdd){
+						if (k == cellSize/2){
+						cout << beginE1 + "8" + beginE2 + space + endE << beginE1 +"8" + beginE2 + space*(cellSize - 6) + spaces(vec[i][j].value) + space*(cellSize - 1) + endE;	
+					}else{
+						cout << beginE1 + "8" + beginE2 + space + endE << beginE1 + "8" + beginE2 + space * (cellSize*2) + endE;
+					}	
+					}else{
+
+						if (k == cellSize/2){
+							cout << beginE1 + "8" + beginE2 + space + endE << beginE1 + backColor(vec[i][j].value) + beginE2 + space*(cellSize - 6) + spaces(vec[i][j].value) + space*(cellSize - 1) + endE;	
+						}else{
+							cout << beginE1 + "8" + beginE2 + space + endE << beginE1 + backColor(vec[i][j].value) + beginE2 + space * (cellSize*2) + endE;
+						}
+					}
+				}else{
+					cout << beginE1 + "8" + beginE2 + space + endE << beginE1 + backColor(vec[i][j].value) + beginE2 + slash * (cellSize*2) + endE;
+				}
+
+			}
+
+			cout << endl;
+
+		}
+
     }
 }
 
@@ -266,30 +312,252 @@ string spaces(int d)
 
 bool WhatCellInPath(vector<cell>,vector<cell>)
 {
-
+	return 0;
 }
 
+pair <int,int> find(vector<vector<cell>> &vec,short int x,short int y)
+{
+	for (int a = 0;a < vec.size();a++){
+		for (int b = 0;b < vec.size();b++){
+			if (vec[a][b].x == x){
+				if (vec[a][b].y == y){
+				return pair <int,int> (a,b);
+				}
+			}
+		}	
+	}
+	cout << "ты ебанутый чтоли?" << endl;
+	return pair <int,int> (-1,-1);
+}
 
 void move(vector<vector<cell>> &vec,clickBtn btn)
 {
+	pair<int,int> ab;
+	cell temp;
+	int x,y;
 	switch (btn)
 	{
 	case UP:
-		for (int j = 1;j < vec.size();j++){
+		for (int j = 0;j < vec.size();j++){
 				
-				vec[j][j]
-			
-			for (int i = 1;i < vec.size();i++){
-				
+			for (int i = 0;i < vec.size();i++){
+
+				//cout << i << "\t" << j << endl;
+
+				if (vec[i][j].value != 0){
+
+					temp = vec[i][j];
+
+					while(1){
+	
+						ab = find(vec,temp.x, temp.y - 1);
+
+						if (ab.first == -1){
+							break;
+						}
+
+
+						if (vec[ab.first][ab.second].value == 0){
+
+							vec[temp.y][temp.x] = vec[ab.first][ab.second];
+
+							vec[temp.y][temp.x].y = temp.y;
+							vec[temp.y][temp.x].x = temp.x;
+
+							temp.y = ab.first;
+							temp.x = ab.second;
+
+							vec[ab.first][ab.second] = temp;
+
+							cout << "X=\t" <<  temp.x << "Y=\t" << temp.y << endl;
+						}
+						else if (vec[ab.first][ab.second].value == vec[temp.y][temp.x].value){
+
+							vec[ab.first][ab.second].isAdd = true;
+							
+							vec[ab.first][ab.second].value *= 2;
+							vec[temp.y][temp.x].value = 0;
+
+							cout << "EPJOQW" << endl;
+
+							break;
+
+						}else if (vec[ab.first][ab.second].value != 0){
+							//cout << vec[ab.first][ab.second].value << "AAAWEQ" << endl;
+							break;
+						}
+						//cout << "Jija\t" << i << "\t" << j << endl;	
+					}
+				}
+
 			}
 
 		}
 		break;
 	case DOWN:
+		for (int j = 0;j < vec.size();j++){
+				
+			for (int i = vec.size() - 1;i >= 0;i--){
+
+				//cout << i << "\t" << j << endl;
+
+				if (vec[i][j].value != 0){
+
+					temp = vec[i][j];
+
+					while(1){
+	
+						ab = find(vec,temp.x, temp.y + 1);
+
+						if (ab.first == -1){
+							break;
+						}
+
+
+						if (vec[ab.first][ab.second].value == 0){
+							
+							vec[temp.y][temp.x] = vec[ab.first][ab.second];
+
+							vec[temp.y][temp.x].y = temp.y;
+							vec[temp.y][temp.x].x = temp.x;
+
+							temp.y = ab.first;
+							temp.x = ab.second;
+
+							vec[ab.first][ab.second] = temp;
+
+							cout << "X=\t" <<  temp.x << "Y=\t" << temp.y << endl;
+						}
+						else if (vec[ab.first][ab.second].value == vec[temp.y][temp.x].value){
+							
+
+							vec[ab.first][ab.second].isAdd = true;
+
+							vec[ab.first][ab.second].value *= 2;
+							vec[temp.y][temp.x].value = 0;
+
+							break;
+						}else if (vec[ab.first][ab.second].value != 0){
+							//cout << vec[ab.first][ab.second].value << "AAAWEQ" << endl;
+							break;
+						}
+						//cout << "Jija\t" << i << "\t" << j << endl;	
+					}
+				}
+
+			}
+
+		}
 		break;
 	case LEFT:
+		for (int i = 0;i < vec.size();i++){
+				
+			for (int j = 0;j < vec.size();j++){
+
+				//cout << i << "\t" << j << endl;
+
+				if (vec[i][j].value != 0){
+
+					temp = vec[i][j];
+
+					while(1){
+	
+						ab = find(vec,temp.x - 1, temp.y);
+						cout << " KPOQEJKPOFJPOEQWJ\t" << "1 - "<< ab.first << "2 - " << ab.second << endl;
+					
+
+						if (ab.first == -1){
+							break;
+						}
+
+
+						if (vec[ab.first][ab.second].value == 0){
+							
+							vec[temp.y][temp.x] = vec[ab.first][ab.second];
+
+							vec[temp.y][temp.x].y = temp.y;
+							vec[temp.y][temp.x].x = temp.x;
+
+							temp.y = ab.first;
+							temp.x = ab.second;
+
+							vec[ab.first][ab.second] = temp;
+
+							cout << "X=\t" <<  temp.x << "Y=\t" << temp.y << endl;
+						}
+						else if (vec[ab.first][ab.second].value == vec[temp.y][temp.x].value){
+
+
+							vec[ab.first][ab.second].isAdd = true;
+							vec[ab.first][ab.second].value *= 2;
+							vec[temp.y][temp.x].value = 0;
+
+							break;
+
+						}else if (vec[ab.first][ab.second].value != 0){
+							//cout << vec[ab.first][ab.second].value << "AAAWEQ" << endl;
+							break;
+						}
+						//cout << "Jija\t" << i << "\t" << j << endl;	
+					}
+				}
+
+			}
+
+		}
 		break;
 	case RIGHT:
+		for (int i = 0;i < vec.size();i++){
+				
+			for (int j = vec.size();j >= 0;j--){
+
+				//cout << i << "\t" << j << endl;
+
+				if (vec[i][j].value != 0){
+
+					temp = vec[i][j];
+
+					while(1){
+	
+						ab = find(vec,temp.x + 1, temp.y);
+
+						if (ab.first == -1){
+							break;
+						}
+
+						if (vec[ab.first][ab.second].value == 0){
+							
+							vec[temp.y][temp.x] = vec[ab.first][ab.second];
+
+							vec[temp.y][temp.x].y = temp.y;
+							vec[temp.y][temp.x].x = temp.x;
+
+							temp.y = ab.first;
+							temp.x = ab.second;
+
+							vec[ab.first][ab.second] = temp;
+
+							cout << "X=\t" <<  temp.x << "Y=\t" << temp.y << endl;
+						}
+						else if (vec[ab.first][ab.second].value == vec[temp.y][temp.x].value){
+
+							vec[ab.first][ab.second].isAdd = true;
+							vec[ab.first][ab.second].value *= 2;
+							vec[temp.y][temp.x].value = 0;
+
+							break;
+
+						}else if (vec[ab.first][ab.second].value != 0){
+							//cout << vec[ab.first][ab.second].value << "AAAWEQ" << endl;
+							break;
+						}
+						//cout << "Jija\t" << i << "\t" << j << endl;	
+					}
+				}
+
+			}
+
+		}
 		break;
 	
 	default:
@@ -301,31 +569,39 @@ void move(vector<vector<cell>> &vec,clickBtn btn)
 
 int main()
 {
-    vector<vector<cell>> vct(4, vector<cell>(4));
+    vector<vector<cell>> vec(4, vector<cell>(4));
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			vct[i][j].value = 0;
-			vct[i][j].x = j;
-			vct[i][j].y = i;
+			vec[i][j].value;
+			vec[i][j].x = j;
+			vec[i][j].y = i;
+			vec[i][j].isAdd = false;
 		}
 	}
 
-	
 	clickBtn btn;
-	
-	
+
+	vec[rand() %3][rand() % 3].value = 2;
+
 	while (1){
+		print(vec,4,10);
 		btn = getKey();
-		CreateCell(vct,btn);
-		for (auto x : vct){
-			for (auto c : x){
-				cout << c.value << "\t";
+		this_thread::sleep_for(150ms);
+		move(vec,btn);
+		CreateCell(vec,btn);
+		cout << endl;
+		
+		print(vec,4,10);
+		
+		for (auto &i : vec){
+			for (auto &j : i){
+				j.isAdd = false;
 			}
-			cout << endl;
-			print(vct,4,10);
 		}
+
+		this_thread::sleep_for(200ms);
 	}
 
 
