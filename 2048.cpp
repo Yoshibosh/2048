@@ -11,6 +11,8 @@
 #include <ctime>
 #include <queue>
 #include <mutex>
+#include <fstream>
+
 
 using namespace std;
 	
@@ -96,93 +98,38 @@ clickBtn getKey()
 
 int Choices();
 
-pair<int, int> CreateCell(vector<vector<cell>> &vct, clickBtn btn,bool isMove)
+pair<int, int> CreateCell(vector<vector<cell>> &vec, clickBtn btn,bool isMove)
 {
 
+	int t = rand() % 1000;
+	srand((unsigned)t);
 	int r = rand() % 4;
-	int counter = 0;
+	int counter,count = 0;
 
 	if (!isMove){
 		return pair<int, int> {-1,-1}; 
 	}
 
-	switch (btn)
+	for (int i = r;count < vec.size();i++)
 	{
-	case UP:
+		if (i > 3){i = 0;}
+		count++;
 
-		for (int j = r;counter < 4; j++)
+		counter = 0;
+		for (int j = r;counter < vec.size(); j++)
 		{
 			if (j > 3){j = 0;}
 			counter++;
-			if (vct[3][j].value == 0)
+			if (vec[i][j].value == 0)
 			{
-				vct[3][j].value = Choices();
-				return pair<int, int>{vct[3][j].y, vct[3][j].x};
-			}
-			else
-			{
+				vec[i][j].value = Choices();
+				return pair<int, int>{vec[i][j].y, vec[i][j].x};
 			}
 		}
-
-		break;
-
-	case DOWN:
-
-		for (int j = r; counter < 4; j++)
-		{
-			if (j > 3){j = 0;}
-			counter++;
-			if (vct[0][j].value == 0)
-			{
-				vct[0][j].value = Choices();
-				return pair<int, int>{vct[0][j].y, vct[0][j].x};
-			}
-			else
-			{
-			}
-		}
-
-		break;
-	case LEFT:
-
-		for (int j = r; counter < 4; j++)
-		{
-			if (j > 3){j = 0;}
-			counter++;
-			if (vct[j][3].value == 0)
-			{
-				vct[j][3].value = Choices();
-				return pair<int, int>{vct[j][3].y, vct[j][3].x};
-			}
-			else
-			{
-			}
-		}
-		break;
-
-	case RIGHT:
-
-		for (int j = r; counter < 4; j++)
-		{
-			if (j > 3){j = 0;}
-			counter++;
-			if (vct[j][0].value == 0)
-			{
-				vct[j][0].value = Choices();
-				return pair<int, int>{vct[j][0].y, vct[j][0].x};
-			}
-			else
-			{
-			}
-		}
-
-		break;
-
-	case CLEAR:
-		break;
 	}
-	return pair<int, int>{-1, 0};
+	return pair<int,int> {-1,-1};
 }
+
 
 int Choices()
 {
@@ -327,11 +274,11 @@ void print(vector<vector<cell>> &vec, int fieldSize = 5, int cellSize = 5)
 					{
 						if (k == cellSize / 2)
 						{
-							cout << beginE1 + "157" + beginE2 + space + endE << beginE1 + "157" + beginE2 + space * (cellSize - 6) + spaces(vec[i][j].value) + space * (cellSize - 1) + endE;
+							cout << beginE1 + "8" + beginE2 + space + endE << beginE1 + "157" + beginE2 + space * (cellSize - 6) + spaces(vec[i][j].value) + space * (cellSize - 1) + endE;
 						}
 						else
 						{
-							cout << beginE1 + "157" + beginE2 + space + endE << beginE1 + "157" + beginE2 + space * (cellSize * 2) + endE;
+							cout << beginE1 + "8" + beginE2 + space + endE << beginE1 + "157" + beginE2 + space * (cellSize * 2) + endE;
 						}
 					}
 					else
@@ -403,7 +350,7 @@ pair<int, int> find(vector<vector<cell>> &vec, short int x, short int y)
 			}
 		}
 	}
-	cout << "ты ебанутый чтоли?" << endl;
+	//cout << "ты ебанутый чтоли?" << endl;
 	return pair<int, int>(-1, -1);
 }
 
@@ -735,6 +682,7 @@ int main()
 	thread t1;
 
 	clickBtn btn;
+	size_t result = 0;
 	//qw
 	srand(rand() % 200);
 
@@ -744,7 +692,7 @@ int main()
 	bool isMove;
 	bool gameover = false;
 
-	btn = getKey();
+	print(vec, 4, 10);
 
 	while (1)
 	{
@@ -757,6 +705,10 @@ int main()
 		this_thread::sleep_for(100ms);
 		isMove = move(vec, btn);
 		xy = CreateCell(vec, btn,isMove);
+
+		if (xy.first != -1){
+			result += vec[xy.first][xy.second].value;
+		}
 
 		// t1 = thread{animation,&vec,xy};
 
@@ -777,7 +729,18 @@ int main()
 		}
 
 		if (gameover){
-			cout << "\nВы проиграли... :(" << endl;
+			string name;
+			cout << "\nВы проиграли... :(" << endl
+				 << "Ваш счёт - " << result << endl
+				 << "Введите своё имя:" << endl;
+
+			getline(cin,name);
+
+			
+			ofstream fout("Таблица лидеров.txt");
+
+			fout << name << " - "<< result << endl;
+			fout.close();
 			return 0;
 		}
 
